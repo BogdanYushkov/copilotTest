@@ -35,20 +35,25 @@ jobs:
       
     - name: Generate Allure Report
       if: always()
-      run: npx allure generate allure-results -o allure-report --clean
-
+      run: |
+        npm install -g allure-commandline
+        allure generate allure-results -o _site --clean
+        
     - name: Setup Pages
       if: always()
       uses: actions/configure-pages@v4
-
+      
     - name: Upload Pages artifact
       if: always()
       uses: actions/upload-pages-artifact@v3
-      with:
-        path: allure-report
 
-    - name: Deploy to GitHub Pages
-      if: always()
-      uses: actions/deploy-pages@v4
-      with:
-        path: allure-report
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
