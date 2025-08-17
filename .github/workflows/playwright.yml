@@ -50,7 +50,12 @@ jobs:
       run: npx playwright install --with-deps
       
     - name: Run Playwright tests
-      run: npx playwright test --project=${{ github.event.inputs.browser || 'chromium' }}
+      run: |
+        if [ "${{ github.event.inputs.browser }}" != "" ]; then
+          npx playwright test --project=${{ github.event.inputs.browser }}
+        else
+          npx playwright test --project=chromium
+        fi
       
     - name: Generate Allure Report
       if: always()
